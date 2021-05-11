@@ -18,7 +18,7 @@ from tqdm import tqdm
 def walk_dir(folder, extensions=None, exclude=None):
     if extensions is None:
         extensions = []
-    if exclude in None:
+    if exclude is None:
         exclude = []
     files = []
     for fn in os.listdir(folder):
