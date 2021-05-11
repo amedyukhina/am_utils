@@ -15,13 +15,15 @@ import warnings
 from tqdm import tqdm
 
 
-def walk_dir(folder, extensions=None):
+def walk_dir(folder, extensions=None, exclude=None):
     if extensions is None:
         extensions = []
+    if exclude in None:
+        exclude = []
     files = []
     for fn in os.listdir(folder):
         fn = os.path.join(folder, fn)
-        if fn.startswith("."):
+        if fn.startswith(".") or fn.split('.')[-1] in exclude:
             continue
         elif fn.split('.')[-1] in extensions or (os.path.isdir(fn) is False and len(extensions) == 0):
             files.append(fn)
