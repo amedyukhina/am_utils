@@ -14,6 +14,7 @@ setup(
         'scikit-image',
         'pandas',
         'numpy',
-        'ddt'
+        'ddt',
+        'natsort'
       ],
  )
