@@ -9,6 +9,9 @@ setup(
     author_email='anna.medyukhina@gmail.com',
     packages=['am_utils'],
     license='Apache License Version 2.0',
+    include_package_data=True,
+
+    test_suite='am_utils.tests',
 
     install_requires=[
         'scikit-image',
@@ -16,6 +19,9 @@ setup(
         'numpy',
         'ddt',
         'natsort',
-        'tqdm'
+        'tqdm',
+        'scipy',
+        'ddt',
+        'pytest'
       ],
  )
