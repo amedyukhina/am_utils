@@ -15,6 +15,7 @@ setup(
         'pandas',
         'numpy',
         'ddt',
-        'natsort'
+        'natsort',
+        'tqdm'
       ],
  )

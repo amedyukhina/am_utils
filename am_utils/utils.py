@@ -8,10 +8,11 @@ Auxiliary functions for working with files and statistics
 
 """
 import os
+import warnings
+
 import natsort
 import pandas as pd
 from skimage import io
-import warnings
 from tqdm import tqdm
 
 
@@ -72,4 +73,3 @@ def imsave(outputfile, img):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         io.imsave(outputfile, img)
-

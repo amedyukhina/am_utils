@@ -7,8 +7,8 @@ Auxiliary functions for parallel processing
   email: anna.medyukhina@gmail.com
 
 """
-from multiprocessing import Process
 import time
+from multiprocessing import Process
 
 
 def _print_progress(procdone, totproc, start):
@@ -24,16 +24,16 @@ def _print_progress(procdone, totproc, start):
     start : float
         the time when the computation has started   
     """
-    donepercent = procdone*100/totproc
+    donepercent = procdone * 100 / totproc
     elapse = time.time() - start
-    tottime = totproc*1.*elapse/procdone
+    tottime = totproc * 1. * elapse / procdone
     left = tottime - elapse
     units = 'sec'
     if left > 60:
-        left = left/60.
+        left = left / 60.
         units = 'min'
         if left > 60:
-            left = left/60.
+            left = left / 60.
             units = 'hours'
 
     print('done', procdone, 'of', totproc, '(', donepercent, '% ), approx. time left: ', left, units)
@@ -97,7 +97,7 @@ def run_parallel(process, process_name=None, print_progress=True, **kwargs):
             for p in procs:
                 if not p.is_alive():
                     procs.remove(p)
-                    procdone +=1
+                    procdone += 1
                     if print_progress:
                         _print_progress(procdone, totproc, start)
 
@@ -118,17 +118,3 @@ def run_parallel(process, process_name=None, print_progress=True, **kwargs):
 
     if print_progress:
         print(process_name, 'done')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
