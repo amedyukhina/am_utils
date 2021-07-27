@@ -97,3 +97,42 @@ def normalize_channels(img: np.ndarray, maxval: float = 255, percentiles: list =
             img[sl] = img[sl] * maxval / mx
         img[sl] = np.clip(img[sl], 0, maxval)
     return img
+
+
+def plot_projections(img: np.ndarray, spacing: int = 5, zoom: float = None) -> np.ndarray:
+    """
+    Plot three maximum intensity projections of the given image side-by-side.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Input 3D image.
+    spacing : int
+        Number of pixels to separate the projections in the output image.
+        Default: 5
+    zoom : float, optional
+        Scale factor to interpolate the image along z axis.
+        Default: None (no interpolation).
+
+    Returns
+    -------
+    np.ndarray
+        Output image with the three maximum projections
+    """
+    m0 = np.max(img, axis=0)
+    m1 = np.max(img, axis=1)
+    m2 = np.max(img, axis=2)
+
+    if zoom is not None:
+        zoom_arr = [1.] * len(m1.shape)
+        zoom_arr[0] = zoom
+        m1 = ndimage.interpolation.zoom(m1 * 1., zoom_arr, order=1)
+        m2 = ndimage.interpolation.zoom(m2 * 1., zoom_arr, order=1)
+
+    maxproj = np.zeros((m0.shape[0] + m1.shape[0] + spacing,
+                        m0.shape[1] + m2.shape[0] + spacing) +
+                       img.shape[3:])
+    maxproj[:m0.shape[0], :m0.shape[1]] = m0
+    maxproj[m0.shape[0] + spacing:, :m0.shape[1]] = m1
+    maxproj[:m0.shape[0], m0.shape[1] + spacing:] = np.swapaxes(m2, 0, 1)
+    return maxproj
