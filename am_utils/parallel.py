@@ -164,6 +164,7 @@ def batch_convert(input_dir: str, output_dir: str,
     kwargs['function'] = function
     run_parallel(process=__batch_convert_helper,
                  items=items,
+                 process_name=function.__name__,
                  print_progress=verbose,
                  max_threads=n_jobs,
                  **kwargs)
