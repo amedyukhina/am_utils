@@ -1,3 +1,4 @@
+import itertools
 import os
 import shutil
 import unittest
@@ -6,7 +7,7 @@ import numpy as np
 from ddt import ddt, data
 from skimage import io
 
-from ..imgproc import convert_to_isotropic, convert_to_maxprojection
+from ..imgproc import convert_to_isotropic, convert_to_maxprojection, normalize_channels
 from ..parallel import batch_convert
 from ..utils import imsave, walk_dir
 
@@ -86,6 +87,37 @@ class TestMaxprojConversion(unittest.TestCase):
         self.assertEqual(len(imgout.shape), 2)
         shutil.rmtree(inputpath)
         shutil.rmtree(outputpath)
+
+
+@ddt
+class TestNormalizeChannels(unittest.TestCase):
+    @data(
+        *itertools.product([
+            np.random.randint(0, 100, [10] * 3),
+            np.random.randint(0, 100, [10] * 4)],
+            [1, 10, 255, 65536])
+    )
+    def test_maxval(self, case):
+        img, maxval = case
+        output = normalize_channels(img * 1., maxval=maxval, percentiles=[[1, 99]] * img.shape[-1])
+        self.assertEqual(np.max(output), maxval)
+
+    @data(
+        np.ones([10] * 3),
+        np.zeros([5] * 4)
+    )
+    def test_maxval(self, img):
+        output = normalize_channels(img * 1., maxval=255)
+        self.assertEqual(np.max(output), 0)
+
+    @data(
+        (np.random.randint(0, 100, [10] * 3), [2, 3, 4]),
+        (np.random.randint(0, 100, [10] * 3), [[1, 99]] * 9),
+        (np.random.randint(0, 100, [10] * 3), 5),
+    )
+    def test_value_errors(self, case):
+        img, percentiles = case
+        self.assertRaises(ValueError, normalize_channels, img, percentiles=percentiles)
 
 
 if __name__ == '__main__':

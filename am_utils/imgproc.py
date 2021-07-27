@@ -55,3 +55,45 @@ def convert_to_maxprojection(img: np.ndarray, axis: int = 0, preprocess: callabl
         img = preprocess(img)
 
     return np.max(img, axis=axis)
+
+
+def normalize_channels(img: np.ndarray, maxval: float = 255, percentiles: list = None) -> np.ndarray:
+    """
+    Normalize individual image channels.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Input image to normalize.
+        The last axis must be channel.
+    maxval : float
+        Maximum value of the output image
+    percentiles : nested list, optional
+        Percentile list for each channel of the form [[low_ch1, high_ch1], [low_ch2, high_ch2], [low_ch3, high_ch3]].
+
+    Returns
+    -------
+    np.ndimage
+        Normalized image
+
+    """
+    for ch in range(img.shape[-1]):
+        sl = tuple([slice(0, None)] * (len(img.shape) - 1) + [ch])
+        if percentiles is not None:
+            if not (type(percentiles) in [list, np.array] and type(percentiles[0]) in [list, np.array]):
+                raise ValueError('Percentiles must be provided as a nested list of form '
+                                 '[[low_ch1, high_ch1], [low_ch2, high_ch2], [low_ch3, high_ch3]]')
+            if not len(percentiles[0]) == 2:
+                raise ValueError(rf"Two percentile values must be provided for each channel, "
+                                 rf"{len(percentiles[0])} was provided")
+            if len(percentiles) != img.shape[-1]:
+                raise ValueError(rf"The number of provided percentiles must be equal to the number of "
+                                 rf"image channels ({img.shape[-1]}), {len(percentiles)} were provided")
+            mn, mx = [np.percentile(img[sl], p) for p in percentiles[ch]]
+        else:
+            mn, mx = np.min(img[sl]), np.max(img[sl])
+        img[sl] = img[sl] - mn
+        if mx > 0:
+            img[sl] = img[sl] * maxval / mx
+        img[sl] = np.clip(img[sl], 0, maxval)
+    return img
