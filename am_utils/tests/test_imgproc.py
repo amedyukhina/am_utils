@@ -43,7 +43,7 @@ class TestIsotropicConversion(unittest.TestCase):
 
         convert_to_isotropic_batch(inputpath, outputpath,
                                    n_jobs=8, verbose=False,
-                                   voxel_size=[5, 1, 1])
+                                   **dict(voxel_size=[5, 1, 1]))
         self.assertEqual(len(walk_dir(inputpath)), len(walk_dir(outputpath)))
         imgout = io.imread(walk_dir(outputpath)[0])
         self.assertEqual(type(imgout[0, 0, 0]), imgtype)
