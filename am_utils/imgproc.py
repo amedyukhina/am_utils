@@ -99,6 +99,37 @@ def normalize_channels(img: np.ndarray, maxval: float = 255, percentiles: list =
     return img
 
 
+def rescale_intensity_percentiles(img: np.ndarray,
+                                  percentiles: Union[list, tuple] = (0.25, 99.75),
+                                  minrange: float = 0) -> np.ndarray:
+    """
+    Rescale image intensity between 0 and 1 with provided percentiles.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Input image to rescale.
+    percentiles : list or tuple
+        Percentile of the form [low, high].
+        Default: (0.25, 99.75)
+    minrange : float
+        Minimum difference between the low and high percentiles.
+        If the difference is lower than this parameter, an array of zeros will be returned.
+        Default: 0
+
+    Returns
+    -------
+    np.ndimage
+        Rescaled image
+
+    """
+    mn, mx = [np.percentile(img, p) for p in percentiles]
+    if mx > mn + minrange:
+        return np.clip((img.astype(np.float32) - mn) / (mx - mn), 0, 1)
+    else:
+        return np.zeros(img.shape, dtype=np.float32)
+
+
 def plot_projections(img: np.ndarray, spacing: int = 5, zoom: float = None) -> np.ndarray:
     """
     Plot three maximum intensity projections of the given image side-by-side.
