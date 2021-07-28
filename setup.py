@@ -1,6 +1,5 @@
 from setuptools import setup
 
-
 setup(
     name='am_utils',
     version='0.1',
@@ -23,5 +22,5 @@ setup(
         'scipy',
         'ddt',
         'pytest'
-      ],
- )
+    ],
+)
