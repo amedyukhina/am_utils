@@ -77,6 +77,7 @@ def normalize_channels(img: np.ndarray, maxval: float = 255, percentiles: list =
         Normalized image
 
     """
+    img = img.astype(np.float)
     for ch in range(img.shape[-1]):
         sl = tuple([slice(0, None)] * (len(img.shape) - 1) + [ch])
         if percentiles is not None:
@@ -123,6 +124,7 @@ def rescale_intensity_percentiles(img: np.ndarray,
         Rescaled image
 
     """
+    img = img.astype(np.float)
     mn, mx = [np.percentile(img, p) for p in percentiles]
     if mx > mn + minrange:
         return np.clip((img.astype(np.float32) - mn) / (mx - mn), 0, 1)
