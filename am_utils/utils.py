@@ -54,14 +54,16 @@ def combine_statistics(inputfolder, extensions=['csv'], sep=','):
 
     if os.path.exists(inputfolder):
         files = walk_dir(inputfolder, extensions=extensions)
-        total_length = len(files)
+        fn_out = inputfolder
+        if fn_out.endswith('/'):
+            fn_out = fn_out[:-1]
 
         array = []
         for fn in tqdm(files):
             data = pd.read_csv(fn, sep=sep)
             array.append(data)
         data = pd.concat(array, ignore_index=True, sort=True)
-        data.to_csv(inputfolder[:-1] + '.csv', sep=sep, index=False)
+        data.to_csv(fn_out + '.csv', sep=sep, index=False)
 
 
 def imsave(outputfile, img):
