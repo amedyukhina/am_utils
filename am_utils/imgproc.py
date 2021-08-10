@@ -31,7 +31,7 @@ def convert_to_isotropic(img: np.ndarray, voxel_size: Union[list, np.array, tupl
         raise ValueError(rf'The number of image dimensions must be 3, {len(img.shape)} provided')
 
 
-def convert_to_maxprojection(img: np.ndarray, axis: int = 0, preprocess: callable = None) -> np.ndarray:
+def convert_to_maxprojection(img: np.ndarray, axis: int = 0, preprocess: callable = None, **preprocess_kwargs) -> np.ndarray:
     """
     Convert an image to its maximum intensity projection along given axis.
 
@@ -45,6 +45,8 @@ def convert_to_maxprojection(img: np.ndarray, axis: int = 0, preprocess: callabl
     preprocess : callable, optional
         Function/transform to apply before generating maximum projection.
         Default: None.
+    preprocess_kwargs : dict
+        Keyword arguments that are passed to the `preprocess`.
 
     Returns
     -------
@@ -52,7 +54,7 @@ def convert_to_maxprojection(img: np.ndarray, axis: int = 0, preprocess: callabl
         Maximum intensity projection of the input image.
     """
     if preprocess is not None:
-        img = preprocess(img)
+        img = preprocess(img, **preprocess_kwargs)
 
     return np.max(img, axis=axis)
 
