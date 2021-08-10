@@ -123,13 +123,14 @@ def run_parallel(process: callable,
         print(process_name, 'done')
 
 
-def __batch_convert_helper(item, function, **kwargs):
+def __batch_convert_helper(item, function, imgtype=None, **kwargs):
     """
     Helper function for parallel running
     """
     fn_in, fn_out = item
     img = io.imread(fn_in)
-    imgtype = type(img[0, 0, 0])
+    if imgtype is None:
+        imgtype = type(img[0, 0, 0])
     img = function(img, **kwargs)
     imsave(fn_out, img.astype(imgtype))
 
