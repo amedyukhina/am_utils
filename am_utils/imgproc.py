@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+Auxiliary functions for image processing
+
+:Author:
+  `Anna Medyukhina`_
+  email: anna.medyukhina@gmail.com
+
+"""
 from typing import Union
 
 import numpy as np
@@ -31,7 +40,8 @@ def convert_to_isotropic(img: np.ndarray, voxel_size: Union[list, np.array, tupl
         raise ValueError(rf'The number of image dimensions must be 3, {len(img.shape)} provided')
 
 
-def convert_to_maxprojection(img: np.ndarray, axis: int = 0, preprocess: callable = None, **preprocess_kwargs) -> np.ndarray:
+def convert_to_maxprojection(img: np.ndarray, axis: int = 0, preprocess: callable = None,
+                             **preprocess_kwargs) -> np.ndarray:
     """
     Convert an image to its maximum intensity projection along given axis.
 

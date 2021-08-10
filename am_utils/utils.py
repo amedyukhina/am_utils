@@ -9,14 +9,40 @@ Auxiliary functions for working with files and statistics
 """
 import os
 import warnings
+from typing import Union
 
 import natsort
+import numpy as np
 import pandas as pd
 from skimage import io
 from tqdm import tqdm
 
 
-def walk_dir(folder, extensions=None, exclude=None):
+def walk_dir(folder: str, extensions: Union[list, tuple, np.array] = None,
+             exclude: Union[list, tuple, np.array, None] = None) -> list:
+    """
+    Return the list of full file paths for a given folder and give file extensions.
+
+    Parameters
+    ----------
+    folder : str
+        Input directory to list
+    extensions : list, optional
+        List of extensions to include.
+        If provided, only files with these extensions will be listed.
+        If None, all files will be listed.
+        Default: None
+    exclude : list, optional
+        List of extensions to exclude.
+        If None, all files, or files with extensions specified by `extensions`, will be listed.
+        Default: None
+
+    Returns
+    -------
+    list :
+        List of files with full paths
+
+    """
     if extensions is None:
         extensions = []
     if exclude is None:
@@ -35,41 +61,60 @@ def walk_dir(folder, extensions=None, exclude=None):
     return files
 
 
-def combine_statistics(inputfolder, extensions=['csv'], sep=','):
+def combine_statistics(folder: str, output_name: str = None,
+                       extensions: Union[list, tuple, np.array, None] = None, sep: str = ','):
     """
-    Concatenates all statistic tables from csv files located in a given directory.
-    The resulting table will be saved into `inputfolder` + ".csv".
-    
+        Concatenates all statistic tables from the csv files located in the provided directory.
+
     Parameters
     ----------
-    inputfolder : str
+    folder : str
         Name of directory, where the csv files are located that should be concatenated.
-               
-    Examples
-    --------
-    >>> combine_statistics("output/statistics/")  
-    # all csv files in the folder "output/statistics/" will be concatenated
-    # the result will be saved in the file "output/statistics.csv".
+    output_name : str
+        File name to save the combined statistics.
+        If None, the output name will be `folder` + ".csv".
+        Default: None
+    extensions : list
+        List of extensions to include.
+        If None, "csv" and "txt" will be included.
+        Default: None
+    sep : str, optional
+        Field separator provided to pandas
+        Default: ','
+
+
     """
 
-    if os.path.exists(inputfolder):
-        files = walk_dir(inputfolder, extensions=extensions)
-        fn_out = inputfolder
-        if fn_out.endswith('/'):
-            fn_out = fn_out[:-1]
+    if os.path.exists(folder):
+        if extensions is None:
+            extensions = ['csv', 'txt']
+        files = walk_dir(folder, extensions=extensions)
+        if output_name is None:
+            output_name = folder
+            if output_name.endswith('/'):
+                output_name = output_name[:-1]
+            output_name = output_name + '.csv'
 
         array = []
         for fn in tqdm(files):
             data = pd.read_csv(fn, sep=sep)
             array.append(data)
         data = pd.concat(array, ignore_index=True, sort=True)
-        data.to_csv(fn_out + '.csv', sep=sep, index=False)
+        data.to_csv(output_name, sep=sep, index=False)
 
 
-def imsave(outputfile, img):
+def imsave(outputfile: str, img: np.ndarray):
     """
-    Creates the output directory for the image (if not exists) and saves the image with catching warnings.
-    
+
+    Creates the output directory for the image (if not exists) and saves the image with warnings catching.
+
+    Parameters
+    ----------
+    outputfile : str
+        Output file name
+    img : np.ndarray
+        Image to save
+
     """
     os.makedirs(os.path.dirname(outputfile), exist_ok=True)
     with warnings.catch_warnings():
