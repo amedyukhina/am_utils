@@ -7,6 +7,7 @@ Auxiliary functions for parallel processing
   email: anna.medyukhina@gmail.com
 
 """
+import os
 import time
 from multiprocessing import Process
 from typing import Union
@@ -123,16 +124,17 @@ def run_parallel(process: callable,
         print(process_name, 'done')
 
 
-def __batch_convert_helper(item, function, imgtype=None, **kwargs):
+def __batch_convert_helper(item, function, imgtype=None, overwrite=True, **kwargs):
     """
     Helper function for parallel running
     """
     fn_in, fn_out = item
-    img = io.imread(fn_in)
-    if imgtype is None:
-        imgtype = type(img[0, 0, 0])
-    img = function(img, **kwargs)
-    imsave(fn_out, img.astype(imgtype))
+    if (not os.path.exists(fn_out)) or overwrite is True:
+        img = io.imread(fn_in)
+        if imgtype is None:
+            imgtype = type(img[0, 0, 0])
+        img = function(img, **kwargs)
+        imsave(fn_out, img.astype(imgtype))
 
 
 def batch_convert(input_dir: str, output_dir: str,
