@@ -181,3 +181,32 @@ def plot_projections(img: np.ndarray, spacing: int = 5, zoom: float = None) -> n
     maxproj[m0.shape[0] + spacing:, :m0.shape[1]] = m1
     maxproj[:m0.shape[0], m0.shape[1] + spacing:] = np.swapaxes(m2, 0, 1)
     return maxproj
+
+
+def stack_to_mosaic(img, ncols=5):
+    """
+    Convert a 3D stack to mosaic.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        3D image
+    ncols : int, optional
+        Number of columns in the mosaic.
+        Default: 5
+
+    Returns
+    -------
+    img : np.ndarray
+        2D mosaic view of the input image.
+    """
+    img = np.array(img)
+    nrows = int(np.ceil(img.shape[0] / ncols))  # calculate the number of rows
+    shape = img.shape[1:]  # shape of each 3D slice
+    pad = nrows * ncols - img.shape[0]
+    img = np.pad(img,
+                 [[0, int(pad)]] + [[0, 0]] * len(shape))  # pad the image stack to fill all columns of the last row
+    img = img.reshape((nrows, ncols,) + img[0].shape)  # reshape the layers into rows and columns
+    img = np.moveaxis(img, 2, 1)  # swap the columns and y axis
+    img = img.reshape((nrows * shape[0], ncols * shape[1]))  # combine rows with y, and columns with x
+    return img
