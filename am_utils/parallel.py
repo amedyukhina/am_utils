@@ -14,36 +14,9 @@ from typing import Union
 
 import numpy as np
 from skimage import io
+from tqdm import tqdm
 
 from .utils import imsave, walk_dir
-
-
-def __print_progress(procdone, totproc, start):
-    """
-    Computes and prints out the percentage of the processes that have been completed
-
-    Parameters
-    ----------
-    procdone : int
-        number of processes that have been completed
-    totproc : int
-        total number of processes
-    start : float
-        the time when the computation has started   
-    """
-    donepercent = procdone * 100 / totproc
-    elapse = time.time() - start
-    tottime = totproc * 1. * elapse / procdone
-    left = tottime - elapse
-    units = 'sec'
-    if left > 60:
-        left = left / 60.
-        units = 'min'
-        if left > 60:
-            left = left / 60.
-            units = 'hours'
-
-    print('done', procdone, 'of', totproc, '(', donepercent, '% ), approx. time left: ', left, units)
 
 
 def run_parallel(process: callable,
@@ -87,23 +60,13 @@ def run_parallel(process: callable,
 
     procs = []
 
-    totproc = len(items)
-    procdone = 0
-    start = time.time()
-
-    if print_progress:
-        print('Started at ', time.ctime())
-
-    for i, cur_item in enumerate(items):
+    for i, cur_item in enumerate(tqdm(items)):
 
         while len(procs) >= max_threads:
             time.sleep(0.05)
             for p in procs:
                 if not p.is_alive():
                     procs.remove(p)
-                    procdone += 1
-                    if print_progress:
-                        __print_progress(procdone, totproc, start)
 
         cur_args = kwargs.copy()
         cur_args['item'] = cur_item
@@ -116,9 +79,6 @@ def run_parallel(process: callable,
         for p in procs:
             if not p.is_alive():
                 procs.remove(p)
-                procdone += 1
-                if print_progress:
-                    __print_progress(procdone, totproc, start)
 
     if print_progress:
         print(process_name, 'done')
