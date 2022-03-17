@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='am_utils',
-    version='0.1',
+    version='0.2',
     url="https://github.com/amedyukhina/am_utils",
     author="Anna Medyukhina",
     author_email='anna.medyukhina@gmail.com',
