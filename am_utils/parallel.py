@@ -48,7 +48,7 @@ def run_parallel(process: callable,
     print_progress : bool, optional
         If True, the progress of the computation will be printed.
         Default is True.
-    kwargs : dict
+    kwargs : key value
         Keyword arguments that are passed to the `process`.
 
     """
@@ -118,7 +118,7 @@ def batch_convert(input_dir: str, output_dir: str,
     verbose : bool, optional
         Display computation progress.
         Default: True.
-    kwargs : dict
+    kwargs : key value
         Keyword arguments that are passed to the `function`
 
     """
